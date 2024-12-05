@@ -1,0 +1,81 @@
+[
+  {
+    "ContainingType": "Server.Controllers.EnvironmentalDataController",
+    "Method": "GetAll",
+    "RelativePath": "api/EnvironmentalData",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Server.Controllers.EnvironmentalDataController",
+    "Method": "Create",
+    "RelativePath": "api/EnvironmentalData",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "entry",
+        "Type": "Server.Models.EnvironmentalDataEntry",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Server.Controllers.EnvironmentalDataController",
+    "Method": "GetById",
+    "RelativePath": "api/EnvironmentalData/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Server.Controllers.EnvironmentalDataController",
+    "Method": "Update",
+    "RelativePath": "api/EnvironmentalData/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "updatedEntry",
+        "Type": "Server.Models.EnvironmentalDataEntry",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Server.Controllers.EnvironmentalDataController",
+    "Method": "Delete",
+    "RelativePath": "api/EnvironmentalData/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]
