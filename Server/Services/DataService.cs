@@ -48,9 +48,14 @@ public class EnvironmentalDataService
 
     public async Task<List<EnvironmentalDataEntry>> GetAllByDateAsync(long date)
     {
-        var dt = DateTimeOffset.FromUnixTimeMilliseconds(date).DateTime.Date;
+        var dt = UnixTimeStampToDateTime(date);
+        var roundedDt = new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, 0, 0);
+
         return await _dbContext.EnvironmentalDataEntries
-            .Where(e => e.dateTime.Date == dt)
+            .Where(e => e.dateTime.Year == roundedDt.Year &&
+                        e.dateTime.Month == roundedDt.Month &&
+                        e.dateTime.Day == roundedDt.Day &&
+                        e.dateTime.Hour == roundedDt.Hour)
             .ToListAsync();
     }
 
@@ -69,7 +74,7 @@ public class EnvironmentalDataService
             .ToListAsync();
     }
 
- public async Task<List<EnvironmentalDataEntry>> GetAllByDistrictNameAndDate(string districtName, long startDate, long endDate)
+    public async Task<List<EnvironmentalDataEntry>> GetAllByDistrictNameAndDate(string districtName, long startDate, long endDate)
     {
         Coordinate Coordinate = await _dbContext.Coordinates.Where(e => e.district == districtName).FirstOrDefaultAsync();
         int idDistric = Coordinate.id;
@@ -122,5 +127,12 @@ public class EnvironmentalDataService
         _dbContext.EnvironmentalDataEntries.Remove(entry);
         await _dbContext.SaveChangesAsync();
         return true;
+    }
+    public static DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+    {
+        // Unix timestamp is seconds past epoch
+        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+        return dateTime;
     }
 }

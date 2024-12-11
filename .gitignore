@@ -49,6 +49,3 @@ Client/Resources/*.bmp
 # Ignore server-specific files
 Server/bin/
 Server/obj/
-
-Server.http
-Server.csproj
