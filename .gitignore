@@ -1,0 +1,54 @@
+# Ignore build outputs
+bin/
+obj/
+
+# Ignore user-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignore Rider project files
+.idea/
+
+# Ignore IDE settings
+.vscode/
+.vs/
+
+# Ignore NuGet packages
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Ignore logs
+*.log
+
+# Ignore temporary files
+*.tmp
+*.temp
+
+# Ignore publish outputs
+publish/
+out/
+
+# Ignore other files
+*.DS_Store
+Thumbs.db
+
+# Ignore client-specific files
+Client/bin/
+Client/obj/
+Client/Resources/*.png
+Client/Resources/*.jpg
+Client/Resources/*.jpeg
+Client/Resources/*.gif
+Client/Resources/*.bmp
+
+# Ignore server-specific files
+Server/bin/
+Server/obj/
+
+Server.http
+Server.csproj
