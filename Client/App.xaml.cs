@@ -1,51 +1,23 @@
-﻿using System.ComponentModel;
-using System.Configuration;
-using System.Data;
+﻿using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
 using System.Windows;
-using System.Windows.Input;
 
 namespace Client
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
-{
-        private object _currentPage;
-        public object CurrentPage
-        {
-            get => _currentPage;
-            set
-            {
-                _currentPage = value;
-                OnPropertyChanged(nameof(CurrentPage));
-            }
-        }
+        public static IConfiguration Configuration { get; private set; }
 
-        public ICommand NavigateCommand { get; }
-
-        public MainViewModel()
+        protected override void OnStartup(StartupEventArgs e)
         {
-            NavigateCommand = new RelayCommand<string>(Navigate);
-            CurrentPage = new Page1(); // Trang mặc định
-        }
+            base.OnStartup(e);
 
-        private void Navigate(string pageName)
-        {
-            CurrentPage = pageName switch
-            {
-                "Page1" => new Page1(),
-                "Page2" => new Page2(),
-                "Page3" => new Page3(),
-                _ => CurrentPage
-            };
-        }
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            Configuration = builder.Build();
         }
     }
 }

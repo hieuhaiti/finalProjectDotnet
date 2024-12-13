@@ -1,15 +1,10 @@
 ﻿<Application x:Class="Client.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Client"
+             xmlns:utilities="clr-namespace:Client.Utilities"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                
-                <ResourceDictionary Source="Utilities/DataTemplate.xaml"/>
-                
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+        <utilities:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <utilities:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Application.Resources>
 </Application>

@@ -4,24 +4,63 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
+        xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="Environmental management system"
+        Title="Environmental Management System"
         Height="600"
         Width="850"
-        AllowsTransparency="True"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
-        Background="Transparent"
->
-    <DockPanel>
-        <!-- Menu điều hướng -->
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Background="LightGray">
-            <Button Content="Quản lý dữ liệu" Command="{Binding NavigateCommand}" CommandParameter="Page1" Margin="5" />
-            <Button Content="Dashboard" Command="{Binding NavigateCommand}" CommandParameter="Page2" Margin="5" />
-            <Button Content="Map" Command="{Binding NavigateCommand}" CommandParameter="Page3" Margin="5" />
+        Background="White"
+       >
+
+    <Grid>
+        <!-- Define Grid Structure: Sidebar + Content -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="144" />
+            <!-- Sidebar width -->
+            <ColumnDefinition />
+            <!-- Main content area -->
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <StackPanel Grid.Column="0" Background="#2C3E50">
+            <!-- Dashboard Button -->
+            <Button Click="DashboardButton_Click">
+                <StackPanel Orientation="Horizontal">
+                    <icon:PackIconMaterial Kind="Home" Width="20" Height="20" />
+                    <TextBlock Text="Dashboard" Margin="10,0,0,0" />
+                </StackPanel>
+            </Button>
+
+            <!-- Management Button -->
+            <Button Click="ManagementButton_Click">
+                <StackPanel Orientation="Horizontal">
+                    <icon:PackIconMaterial Kind="AccountGroup" Width="20" Height="20" />
+                    <TextBlock Text="Management" Margin="10,0,0,0" />
+                </StackPanel>
+            </Button>
+
+            <!-- Map Button -->
+            <Button Click="MapButton_Click">
+                <StackPanel Orientation="Horizontal">
+                    <icon:PackIconMaterial Kind="Map" Width="20" Height="20" />
+                    <TextBlock Text="Map" Margin="10,0,0,0" />
+                </StackPanel>
+            </Button>
+            <Button x:Name="CloseButton"
+                Content="Close"
+                Width="144"
+                Height="40"  
+            Background="Red"
+                Foreground="White"
+                FontSize="16"
+                Click="CloseButton_Click"/>
         </StackPanel>
 
-        <!-- Khung hiển thị các Page -->
-        <Frame x:Name="MainFrame" Content="{Binding CurrentPage}" NavigationUIVisibility="Hidden" />
-    </DockPanel>
+        <!-- Close Button -->
+
+        <!-- Main Content Area -->
+        <Frame x:Name="MainContentFrame" Grid.Column="1" />
+    </Grid>
 </Window>

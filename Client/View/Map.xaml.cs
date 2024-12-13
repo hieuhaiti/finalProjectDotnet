@@ -18,7 +18,7 @@ namespace Client.View
     /// <summary>
     /// Interaction logic for Map.xaml
     /// </summary>
-    public partial class Map : UserControl
+    public partial class Map : Page
     {
         public Map()
         {
