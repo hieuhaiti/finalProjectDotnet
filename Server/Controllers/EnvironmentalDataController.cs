@@ -88,8 +88,6 @@ public class EnvironmentalDataController : ControllerBase
         return Ok(data);
     }
 
-    // thêm AddByDateToDate
-
     [HttpPost("current")]
     public async Task<IActionResult> AddCurrentData(EnvironmentalDataEntry entry)
     {

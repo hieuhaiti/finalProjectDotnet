@@ -30,7 +30,10 @@ namespace Server.Services
 
         private void ScheduleNextRun()
         {
-            var now = DateTime.Now;
+            var utcNow = DateTime.UtcNow;
+            var timeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"); // UTC+7
+            var now = TimeZoneInfo.ConvertTimeFromUtc(utcNow, timeZone);
+
             var nextFullHour = now.AddHours(1).Date.AddHours(now.Hour + 1);
             var delayToNextRun = (nextFullHour - now).TotalMilliseconds;
 
