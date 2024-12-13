@@ -16,13 +16,15 @@ namespace Server.Services
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
         private readonly AppDbContext _dbContext;
+        private readonly ConvertDt _convertDt;
 
 
-        public InitDataService(IConfiguration configuration, AppDbContext dbContext)
+        public InitDataService(IConfiguration configuration, AppDbContext dbContext, ConvertDt convertDt)
         {
             _httpClient = new HttpClient();
             _apiKey = configuration["OpenWeatherMap:ApiKey"] ?? throw new ArgumentNullException(nameof(configuration), "API key cannot be null");
             _dbContext = dbContext;
+            _convertDt = convertDt;
         }
 
         public async Task InitializeDataIfEmptyAsync()
@@ -33,7 +35,7 @@ namespace Server.Services
             }
             if (!_dbContext.EnvironmentalDataEntries.Any())
             {
-                await AddEnvironmentalDataForOneYear();
+                await AddEnvironmentalDataFor12District();
             }
 
         }
@@ -59,13 +61,57 @@ namespace Server.Services
             _dbContext.SaveChanges();
 
         }
+        public async Task AddEnvironmentalDataFor1District(int districtId, long startDate, long endDate)
+        {
+            var coordinate = _dbContext.Coordinates.FirstOrDefault(e => e.id == districtId);
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+            var airPollutionData = await GetHistoryAirPollutionDataAsync(coordinate.lat, coordinate.lon, startDate, endDate);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+            long interval = 7 * 24 * 60 * 60;
+            long currentStart = startDate;
 
-        private async Task AddEnvironmentalDataForOneYear()
+            var entries = new List<EnvironmentalDataEntry>();
+
+            while (currentStart < endDate)
+            {
+                long currentEnd = Math.Min(currentStart + interval, endDate);
+                var weatherData = await GetHistoryWeatherDataAsync(coordinate.lat, coordinate.lon, currentStart, currentEnd);
+
+                foreach (var weather in weatherData.list)
+                {
+                    var airPollution = airPollutionData.list.FirstOrDefault(entry => entry.dt == weather.dt);
+
+                    entries.Add(new EnvironmentalDataEntry
+                    {
+                        coordinateId = coordinate.id,
+                        dt = weather.dt,
+                        dateTime = _convertDt.UnixTimeStampToDateTime(weather.dt),
+                        temp = weather.main.temp,
+                        feelsLike = weather.main.feels_like,
+                        pressure = weather.main.pressure,
+                        humidity = weather.main.humidity,
+                        tempMin = weather.main.temp_min,
+                        tempMax = weather.main.temp_max,
+                        aqi = airPollution?.main.aqi ?? 0,
+                        co = airPollution?.components.co ?? 0,
+                        no = airPollution?.components.no ?? 0,
+                        no2 = airPollution?.components.no2 ?? 0,
+                        o3 = airPollution?.components.o3 ?? 0,
+                        so2 = airPollution?.components.so2 ?? 0,
+                        pm2_5 = airPollution?.components.pm2_5 ?? 0,
+                        pm10 = airPollution?.components.pm10 ?? 0,
+                        nh3 = airPollution?.components.nh3 ?? 0
+                    });
+                }
+                currentStart = currentEnd + 3600;
+            }
+            _dbContext.EnvironmentalDataEntries.AddRange(entries);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        private async Task AddEnvironmentalDataFor12District(long startDate = 1702486800, long endDate = 1733245200)
         {
             var coordinates = _dbContext.Coordinates.ToList();
-            var startDate = 1702486800;
-            var endDate = 1733245200;
-
             foreach (var coordinate in coordinates)
             {
                 var airPollutionData = await GetHistoryAirPollutionDataAsync(coordinate.lat, coordinate.lon, startDate, endDate);
@@ -87,7 +133,7 @@ namespace Server.Services
                         {
                             coordinateId = coordinate.id,
                             dt = weather.dt,
-                            dateTime = UnixTimeStampToDateTime(weather.dt),
+                            dateTime = _convertDt.UnixTimeStampToDateTime(weather.dt),
                             temp = weather.main.temp,
                             feelsLike = weather.main.feels_like,
                             pressure = weather.main.pressure,
@@ -135,15 +181,8 @@ namespace Server.Services
             }
             return weatherResponse;
         }
-        public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
-        {
-            // Unix timestamp is seconds past epoch
-            DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
-            return dateTime;
-        }
-
     }
 
 
 }
+

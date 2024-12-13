@@ -9,7 +9,8 @@ public class Introduction : ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok("finnal project dotnet \nApi by Ha Trung Hieu - 2121051127 - HUMG ");
+        return
+        Ok("finnal project dotnet \nApi by Ha Trung Hieu - 2121051127 - HUMG \ntry: /swagger");
     }
 }
 
@@ -87,6 +88,7 @@ public class EnvironmentalDataController : ControllerBase
         return Ok(data);
     }
 
+    // thêm AddByDateToDate
 
     [HttpPost("current")]
     public async Task<IActionResult> AddCurrentData(EnvironmentalDataEntry entry)

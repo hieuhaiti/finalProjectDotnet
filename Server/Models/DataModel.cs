@@ -5,13 +5,19 @@ namespace Server.Models
 {
     public class AirPollutionResponse
     {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public Coord coord { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public List<AirPollutionEntry> list { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     }
 
     public class HistoricalWeatherResponse
     {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public List<WeatherEntry> list { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     }
 
     public class Coord
@@ -23,8 +29,12 @@ namespace Server.Models
     public class AirPollutionEntry
     {
         public long dt { get; set; }
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public AirQualityMain main { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public PollutionComponents components { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     }
 
     public class AirQualityMain
@@ -47,7 +57,9 @@ namespace Server.Models
     public class WeatherEntry
     {
         public long dt { get; set; }
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public WeatherComponent main { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     }
 
     public class WeatherComponent
@@ -65,8 +77,8 @@ namespace Server.Models
         public int id { get; set; }
         public double lon { get; set; }
         public double lat { get; set; }
-        public string district { get; set; }
-        public string description { get; set; }
+        public string district { get; set; } = string.Empty;
+        public string description { get; set; } = string.Empty;
     }
 
     public class EnvironmentalDataEntry
