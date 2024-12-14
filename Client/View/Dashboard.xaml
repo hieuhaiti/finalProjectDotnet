@@ -8,7 +8,8 @@
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Dashboard">
-        <Page.Resources>
+    
+    <Page.Resources>
         <Style TargetType="GroupBox">
             <Setter Property="HeaderTemplate">
                 <Setter.Value>

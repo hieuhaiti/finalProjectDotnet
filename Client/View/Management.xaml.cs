@@ -19,7 +19,7 @@ namespace Client.View
         private ObservableCollection<Coordinate> _stationData;
         private int _currentPageEnvironmental = 1;
         private int _currentPageStation = 1;
-        private int _itemsPerPage = 20;
+        private int _itemsPerPage = 25;
         private HttpClient _httpClient;
         private string _apiBaseUrl;
 

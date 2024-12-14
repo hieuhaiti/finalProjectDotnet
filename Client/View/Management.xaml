@@ -13,55 +13,49 @@
         </Grid.RowDefinitions>
 
         <!-- Search and Add Buttons Section -->
-        <Grid Grid.Row="0" Margin="10">
-            <Grid.ColumnDefinitions>
-                <!-- Search Box and Button -->
-                <ColumnDefinition Width="*" />
-                <!-- Add Button -->
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+        <!-- Top row with Search and Add Button -->
+<Grid Grid.Row="0" Margin="10">
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+    </Grid.ColumnDefinitions>
 
-            <!-- Search Box and Button -->
-            <Grid Grid.Column="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" MinWidth="103" />
-                </Grid.ColumnDefinitions>
+    <!-- Search Section -->
+    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+        <!-- Set Text property once -->
+        <TextBox x:Name="SearchBox"
+                 Width="250"
+                 Height="30"
+                 VerticalAlignment="Center"
+                 HorizontalAlignment="Left"
+                 Margin="5,0,5,0"
+                 Padding="5"
+                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
 
-                <!-- Search Box -->
-                <TextBlock
-                    x:Name="SearchBox"
-                     Text="Search..."
-                   Foreground="Gray"
-                           Background="White"
-                   VerticalAlignment="Center"
-                   Margin="5,0,0,0"
-                   IsHitTestVisible="False"
-                   Visibility="{Binding Text, ElementName=SearchBox, Converter={StaticResource StringToVisibilityConverter}}" />
+        <Button Content="Search"
+                Width="100"
+                Height="30"
+                VerticalAlignment="Center"
+                Margin="5,0,0,0"
+                Click="SearchButton_Click"
+                />
+    </StackPanel>
 
-                <!-- Search Button -->
-                <Button Content="Search"
-                        Grid.Column="1"
-                        Height="30"
-                        VerticalAlignment="Center"
-                        Click="SearchButton_Click" Margin="0,0,41,0" />
-            </Grid>
-
-            <!-- Add Button -->
-            <Button x:Name="AddButton"
-                    Grid.Column="1"
-                    Width="50"
-                    Height="50"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Right"
-                    ToolTip="Add New Data"
-                    Click="AddButton_Click"
-                    Background="#007ACC"
-                    Foreground="White"
-                    FontSize="24">
-                <TextBlock Text="+" VerticalAlignment="Center" HorizontalAlignment="Center" />
-            </Button>
-        </Grid>
+    <!-- Add Button -->
+    <!-- Set Content only once -->
+    <Button x:Name="AddButton"
+            Grid.Column="1"
+            Width="50"
+            Height="50"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Right"
+            ToolTip="Add New Data"
+            Click="AddButton_Click"
+            Background="#007ACC"
+            Foreground="White"
+            FontSize="24"
+            Content="+" />
+</Grid>
 
         <!-- Tab Control for Switching Between Environmental Data and Station -->
         <TabControl Grid.Row="1" Margin="10">
