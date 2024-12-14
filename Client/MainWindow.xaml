@@ -48,11 +48,19 @@
                     <TextBlock Text="Map" Margin="10,0,0,0" />
                 </StackPanel>
             </Button>
+             <!-- Maximize/Restore Button -->
+            <Button x:Name="MaximizeRestoreButton" Click="MaximizeRestoreButton_Click">
+                <StackPanel Orientation="Horizontal">
+                    <icon:PackIconMaterial Kind="WindowMaximize" Width="20" Height="20" />
+                    <TextBlock Text="Maximize" Margin="10,0,0,0" />
+                </StackPanel>
+            </Button>
+            <!-- Close Button -->
             <Button x:Name="CloseButton"
                 Content="Close"
                 Width="144"
-                Height="40"  
-            Background="Red"
+                Height="40"
+                Background="Red"
                 Foreground="White"
                 FontSize="16"
                 Click="CloseButton_Click"/>

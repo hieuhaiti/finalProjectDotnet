@@ -12,65 +12,95 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Loading Indicator -->
-        <ProgressBar x:Name="LoadingIndicator"
-                     IsIndeterminate="True"
-                     Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
-                     Height="4"
-                     VerticalAlignment="Top"
-                     Margin="10,0" />
+        <!-- Search and Add Buttons Section -->
+        <Grid Grid.Row="0" Margin="10">
+            <Grid.ColumnDefinitions>
+                <!-- Search Box and Button -->
+                <ColumnDefinition Width="*" />
+                <!-- Add Button -->
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-        <!-- Search and Filter Section -->
-        <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="0" VerticalAlignment="Center" Background="White">
-            <!-- Search Box -->
-            <Grid Margin="0,0,10,0" VerticalAlignment="Center">
-                <TextBox x:Name="SearchBox"
-                         Width="250"
-                         Height="30"
-                         TextChanged="SearchBox_TextChanged" />
+            <!-- Search Box and Button -->
+            <Grid Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" MinWidth="103" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Search Box -->
                 <TextBlock Text="Search..."
-                           Foreground="Gray"
-                           VerticalAlignment="Center"
-                           Margin="5,0,0,0"
-                           IsHitTestVisible="False"
-                           Visibility="{Binding Text, ElementName=SearchBox, Converter={StaticResource StringToVisibilityConverter}}" />
+                   Foreground="Gray"
+                           Background="White"
+                   VerticalAlignment="Center"
+                   Margin="5,0,0,0"
+                   IsHitTestVisible="False"
+                   Visibility="{Binding Text, ElementName=SearchBox, Converter={StaticResource StringToVisibilityConverter}}" />
+            
+                <!-- Search Button -->
+                <Button Content="Search"
+                        Grid.Column="1"
+                        Height="30"
+                        VerticalAlignment="Center"
+                        Click="SearchButton_Click" Margin="0,0,41,0" />
             </Grid>
 
-            <!-- Filter Dropdown -->
-            <ComboBox x:Name="FilterDropdown"
-                      Width="200"
-                      Height="30"
-                      Margin="0,0,10,0" />
-
-            <!-- Search Button -->
-            <Button Content="Search"
-                    Width="80"
-                    Height="30"
-                    Click="SearchButton_Click" />
-        </StackPanel>
+            <!-- Add Button -->
+            <Button x:Name="AddButton"
+                    Grid.Column="1"
+                    Width="50"
+                    Height="50"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Right"
+                    ToolTip="Add New Data"
+                    Click="AddButton_Click"
+                    Background="#007ACC"
+                    Foreground="White"
+                    FontSize="24">
+                <TextBlock Text="+" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            </Button>
+        </Grid>
 
         <!-- Tab Control for Switching Between Environmental Data and Station -->
         <TabControl Grid.Row="1" Margin="10">
             <!-- Environmental Data Tab -->
             <TabItem Header="Environmental Data">
                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
                     <DataGrid x:Name="EnvironmentalDataGrid"
                               AutoGenerateColumns="False"
                               CanUserAddRows="False"
                               IsReadOnly="True"
+                              IsTextSearchEnabled="True"
+                              ClipboardCopyMode="IncludeHeader"
                               Margin="10"
                               AlternatingRowBackground="#F7F7F7"
                               GridLinesVisibility="Horizontal"
-                              HeadersVisibility="All">
+                              HeadersVisibility="All"
+                              ItemsSource="{Binding EnvironmentalData}"
+                              Grid.Row="0">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID" Binding="{Binding id}" Width="100" />
-                            <DataGridTextColumn Header="Coordinate ID" Binding="{Binding coordinateId}" Width="150" />
-                            <DataGridTextColumn Header="Date Time" Binding="{Binding dateTime}" Width="200" />
-                            <DataGridTextColumn Header="Temperature" Binding="{Binding temp}" Width="150" />
+                            <DataGridTextColumn Header="ID" Binding="{Binding id}" Width="150" />
+                            <DataGridTextColumn Header="Coordinate ID" Binding="{Binding coordinateId}" Width="120" />
+                            <DataGridTextColumn Header="Date Time" Binding="{Binding dateTime}" Width="180" />
+                            <DataGridTextColumn Header="Temperature" Binding="{Binding temp}" Width="100" />
+                            <DataGridTextColumn Header="Feels Like" Binding="{Binding feelsLike}" Width="100" />
+                            <DataGridTextColumn Header="Pressure" Binding="{Binding pressure}" Width="100" />
+                            <DataGridTextColumn Header="Humidity" Binding="{Binding humidity}" Width="100" />
+                            <DataGridTextColumn Header="Temp Min" Binding="{Binding tempMin}" Width="100" />
+                            <DataGridTextColumn Header="Temp Max" Binding="{Binding tempMax}" Width="100" />
                             <DataGridTextColumn Header="AQI" Binding="{Binding aqi}" Width="100" />
                             <DataGridTextColumn Header="CO" Binding="{Binding co}" Width="100" />
-                            <DataGridTextColumn Header="PM2.5" Binding="{Binding pm2_5}" Width="100" />
+                            <DataGridTextColumn Header="NO" Binding="{Binding no}" Width="100" />
+                            <DataGridTextColumn Header="NO2" Binding="{Binding no2}" Width="100" />
+                            <DataGridTextColumn Header="O3" Binding="{Binding o3}" Width="100" />
                             <DataGridTextColumn Header="SO2" Binding="{Binding so2}" Width="100" />
+                            <DataGridTextColumn Header="PM2.5" Binding="{Binding pm2_5}" Width="100" />
+                            <DataGridTextColumn Header="PM10" Binding="{Binding pm10}" Width="100" />
+                            <DataGridTextColumn Header="NH3" Binding="{Binding nh3}" Width="100" />
                             <DataGridTemplateColumn Header="Actions" Width="150">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -93,20 +123,40 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
+
+                    <!-- Pagination Section for Environmental Data -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10" Grid.Row="1">
+                        <Button Content="&lt;&lt; Previous"
+                                Click="PreviousPageButtonEnvironmental_Click" />
+                        <TextBlock x:Name="PageInfoTextEnvironmental"
+                                   Text="Page 1 of 1"
+                                   Margin="10"
+                                   VerticalAlignment="Center" />
+                        <Button Content="Next &gt;&gt;"
+                                Click="NextPageButtonEnvironmental_Click" />
+                    </StackPanel>
                 </Grid>
             </TabItem>
 
             <!-- Station Tab (Coordinates) -->
             <TabItem Header="Station">
                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
                     <DataGrid x:Name="CoordinatesGrid"
                               AutoGenerateColumns="False"
                               CanUserAddRows="False"
                               IsReadOnly="True"
+                              IsTextSearchEnabled="True"
+                              ClipboardCopyMode="IncludeHeader"
                               Margin="10"
                               AlternatingRowBackground="#F7F7F7"
                               GridLinesVisibility="Horizontal"
-                              HeadersVisibility="All">
+                              HeadersVisibility="All"
+                              ItemsSource="{Binding StationData}"
+                              Grid.Row="0">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding id}" Width="100" />
                             <DataGridTextColumn Header="Longitude" Binding="{Binding lon}" Width="150" />
@@ -135,34 +185,20 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
+
+                    <!-- Pagination Section for Station Data -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10" Grid.Row="1">
+                        <Button Content="&lt;&lt; Previous"
+                                Click="PreviousPageButtonStation_Click" />
+                        <TextBlock x:Name="PageInfoTextStation"
+                                   Text="Page 1 of 1"
+                                   Margin="10"
+                                   VerticalAlignment="Center" />
+                        <Button Content="Next &gt;&gt;"
+                                Click="NextPageButtonStation_Click" />
+                    </StackPanel>
                 </Grid>
             </TabItem>
         </TabControl>
-
-        <!-- Pagination Section -->
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Margin="10">
-            <Button Content="&lt;&lt; Previous"
-                    Click="PreviousPageButton_Click" />
-            <TextBlock x:Name="PageInfoText"
-                       Text="Page 1 of 1"
-                       Margin="10"
-                       VerticalAlignment="Center" />
-            <Button Content="Next &gt;&gt;"
-                    Click="NextPageButton_Click" />
-        </StackPanel>
-
-        <!-- Floating Add Button -->
-        <Button x:Name="AddButton"
-                Content="+"
-                Width="50"
-                Height="50"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                Margin="20"
-                ToolTip="Add New Data"
-                Click="AddButton_Click"
-                Background="#007ACC"
-                Foreground="White"
-                FontSize="24" />
     </Grid>
 </Page>

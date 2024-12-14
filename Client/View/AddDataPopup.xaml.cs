@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using static Client.Model.DataModel;
 
@@ -6,19 +9,23 @@ namespace Client.View
 {
     public partial class AddDataPopup : Window
     {
+        private readonly HttpClient _httpClient;
+        private readonly string _apiBaseUrl;
+
         public Coordinate NewCoordinate { get; private set; }
         public EnvironmentalDataEntry NewEnvironmentalData { get; private set; }
 
         public AddDataPopup()
         {
             InitializeComponent();
+            _httpClient = new HttpClient();
+            _apiBaseUrl = App.Configuration["api:localhost"];
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             if (DataTabControl.SelectedIndex == 0) // If "Station" tab is selected
             {
-                // Validate and create Coordinate data
                 if (double.TryParse(LongitudeTextBox.Text, out double lon) &&
                     double.TryParse(LatitudeTextBox.Text, out double lat) &&
                     !string.IsNullOrWhiteSpace(DistrictTextBox.Text) &&
@@ -32,8 +39,16 @@ namespace Client.View
                         description = DescriptionTextBox.Text
                     };
 
-                    DialogResult = true; // Close window and signal success
-                    Close();
+                    var success = await PostCoordinate(NewCoordinate);
+                    if (success)
+                    {
+                        DialogResult = true;
+                        Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to save Coordinate. Please try again.");
+                    }
                 }
                 else
                 {
@@ -42,15 +57,22 @@ namespace Client.View
             }
             else if (DataTabControl.SelectedIndex == 1) // If "Environmental Data" tab is selected
             {
-                // Validate and create Environmental Data
                 if (int.TryParse(EnvCoordinateIdTextBox.Text, out int coordinateId) &&
                     double.TryParse(EnvTempTextBox.Text, out double temp) &&
                     double.TryParse(EnvFeelsLikeTextBox.Text, out double feelsLike) &&
                     int.TryParse(EnvPressureTextBox.Text, out int pressure) &&
                     int.TryParse(EnvHumidityTextBox.Text, out int humidity) &&
+                    double.TryParse(EnvTempMinTextBox.Text, out double tempMin) &&
+                    double.TryParse(EnvTempMaxTextBox.Text, out double tempMax) &&
                     int.TryParse(EnvAqiTextBox.Text, out int aqi) &&
                     double.TryParse(EnvCoTextBox.Text, out double co) &&
-                    double.TryParse(EnvPm25TextBox.Text, out double pm2_5))
+                    double.TryParse(EnvNoTextBox.Text, out double no) &&
+                    double.TryParse(EnvNo2TextBox.Text, out double no2) &&
+                    double.TryParse(EnvO3TextBox.Text, out double o3) &&
+                    double.TryParse(EnvSo2TextBox.Text, out double so2) &&
+                    double.TryParse(EnvPm25TextBox.Text, out double pm2_5) &&
+                    double.TryParse(EnvPm10TextBox.Text, out double pm10) &&
+                    double.TryParse(EnvNh3TextBox.Text, out double nh3))
                 {
                     var dateTimeNow = DateTime.UtcNow;
                     NewEnvironmentalData = new EnvironmentalDataEntry
@@ -62,15 +84,29 @@ namespace Client.View
                         feelsLike = feelsLike,
                         pressure = pressure,
                         humidity = humidity,
-                        tempMin = temp, // Add more logic to fill these fields as needed
-                        tempMax = temp,
+                        tempMin = tempMin,
+                        tempMax = tempMax,
                         aqi = aqi,
                         co = co,
-                        pm2_5 = pm2_5
+                        no = no,
+                        no2 = no2,
+                        o3 = o3,
+                        so2 = so2,
+                        pm2_5 = pm2_5,
+                        pm10 = pm10,
+                        nh3 = nh3
                     };
 
-                    DialogResult = true; // Close window and signal success
-                    Close();
+                    var success = await PostEnvironmentalData(NewEnvironmentalData);
+                    if (success)
+                    {
+                        DialogResult = true;
+                        Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to save Environmental Data. Please try again.");
+                    }
                 }
                 else
                 {
@@ -79,10 +115,37 @@ namespace Client.View
             }
         }
 
-        // Cancel button - Close the window without adding data
+        private async Task<bool> PostCoordinate(Coordinate coordinate)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync($"{_apiBaseUrl}api/coordinates", coordinate);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error posting Coordinate: {ex.Message}");
+                return false;
+            }
+        }
+
+        private async Task<bool> PostEnvironmentalData(EnvironmentalDataEntry environmentalData)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync($"{_apiBaseUrl}api/EnvironmentalData/current", environmentalData);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error posting Environmental Data: {ex.Message}");
+                return false;
+            }
+        }
+
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = false; // No action, just close the window
+            DialogResult = false;
             Close();
         }
     }

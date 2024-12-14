@@ -89,7 +89,7 @@ public class EnvironmentalDataController : ControllerBase
     }
 
     [HttpPost("current")]
-    public async Task<IActionResult> AddCurrentData(EnvironmentalDataEntry entry)
+    public async Task<IActionResult> AddCurrentData([FromBody] EnvironmentalDataEntry entry)
     {
         var createdEntry = await _service.AddCurrentDataAsync(entry);
         return CreatedAtAction(nameof(GetById), new { Id = createdEntry.id }, createdEntry);

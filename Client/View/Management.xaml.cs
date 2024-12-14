@@ -15,23 +15,33 @@ namespace Client.View
 {
     public partial class Management : Page, INotifyPropertyChanged
     {
-        private ObservableCollection<EnvironmentalDataEntry> EnvironmentalData;
-        private ObservableCollection<Coordinate> StationData;
-        private int CurrentPage = 1;
-        private int ItemsPerPage = 20;
+        private ObservableCollection<EnvironmentalDataEntry> _environmentalData;
+        private ObservableCollection<Coordinate> _stationData;
+        private int _currentPageEnvironmental = 1;
+        private int _currentPageStation = 1;
+        private int _itemsPerPage = 20;
         private HttpClient _httpClient;
         private string _apiBaseUrl;
-        private bool _isLoading;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public bool IsLoading
+        public ObservableCollection<EnvironmentalDataEntry> EnvironmentalData
         {
-            get => _isLoading;
+            get => _environmentalData;
             set
             {
-                _isLoading = value;
-                OnPropertyChanged(nameof(IsLoading));
+                _environmentalData = value;
+                OnPropertyChanged(nameof(EnvironmentalData));
+            }
+        }
+
+        public ObservableCollection<Coordinate> StationData
+        {
+            get => _stationData;
+            set
+            {
+                _stationData = value;
+                OnPropertyChanged(nameof(StationData));
             }
         }
 
@@ -43,189 +53,255 @@ namespace Client.View
             _apiBaseUrl = App.Configuration["api:localhost"];
             LoadEnvironmentalData();
             LoadStationData();
-            UpdatePagination();
         }
 
-        private async void LoadEnvironmentalData()
+        private async Task LoadEnvironmentalData()
         {
-            IsLoading = true;
             try
             {
-                // Directly deserialize into a List<EnvironmentalDataEntry>
                 var response = await _httpClient.GetFromJsonAsync<List<EnvironmentalDataEntry>>($"{_apiBaseUrl}api/environmentaldata/all");
 
                 if (response != null)
                 {
-                    // Use the response directly
-                    EnvironmentalData = new ObservableCollection<EnvironmentalDataEntry>(response);
-                    UpdatePagination();
+                    EnvironmentalData = new ObservableCollection<EnvironmentalDataEntry>(response.OrderByDescending(x => x.dateTime));
+                    UpdatePaginationEnvironmental();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading environmental data: {ex.Message}");
             }
-            finally
-            {
-                IsLoading = false;
-            }
         }
 
-        private async void LoadStationData()
+        private async Task LoadStationData()
         {
-            IsLoading = true;
             try
             {
-                // Directly deserialize into a List<Coordinate>
-                string url = $"{_apiBaseUrl}api/coordinates";
-                var response = await _httpClient.GetFromJsonAsync<List<Coordinate>>(url);
+                var response = await _httpClient.GetFromJsonAsync<List<Coordinate>>($"{_apiBaseUrl}api/coordinates");
 
                 if (response != null)
                 {
-                    // Use the response directly
                     StationData = new ObservableCollection<Coordinate>(response);
-                    CoordinatesGrid.ItemsSource = StationData;
+                    UpdatePaginationStation();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading station data: {ex.Message}");
             }
-            finally
-            {
-                IsLoading = false;
-            }
         }
 
-
-        // Handle Add Button Click for Environmental Data
         private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            // Open the AddDataPopup window
-            AddDataPopup addDataPopup = new AddDataPopup();
+            var addDataPopup = new AddDataPopup();
             bool? result = addDataPopup.ShowDialog();
 
             if (result == true)
             {
-                var newEntry = addDataPopup.NewEnvironmentalData;
-                var createdEntry = await AddEnvironmentalData(newEntry);
-                if (createdEntry != null)
+                if (addDataPopup.NewCoordinate != null)
                 {
-                    EnvironmentalData.Add(createdEntry);
-                    UpdatePagination();
-                    MessageBox.Show("New entry added!");
+                    await LoadStationData();
+                    MessageBox.Show("New Station added successfully.");
                 }
-                else
+                else if (addDataPopup.NewEnvironmentalData != null)
                 {
-                    MessageBox.Show("Failed to add new entry.");
+                    await LoadEnvironmentalData();
+                    MessageBox.Show("New Environmental Data added successfully.");
                 }
             }
         }
 
-        // API call to add new environmental data
-        private async Task<EnvironmentalDataEntry> AddEnvironmentalData(EnvironmentalDataEntry entry)
-        {
-            var response = await _httpClient.PostAsJsonAsync($"{_apiBaseUrl}api/environmentaldata/current", entry);
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<EnvironmentalDataEntry>();
-            }
-            return null;
-        }
-
-        // Search function to filter data
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
             string query = SearchBox.Text.ToLower();
-            var filteredData = EnvironmentalData.Where(x => x.coordinateId.ToString().Contains(query) || x.temp.ToString().Contains(query)).ToList();
-            EnvironmentalDataGrid.ItemsSource = new ObservableCollection<EnvironmentalDataEntry>(filteredData);
+            if (EnvironmentalDataGrid.IsVisible)
+            {
+                var filteredData = EnvironmentalData.Where(x => x.id.ToString().Contains(query)).ToList();
+                EnvironmentalDataGrid.ItemsSource = new ObservableCollection<EnvironmentalDataEntry>(filteredData);
+            }
+            else if (CoordinatesGrid.IsVisible)
+            {
+                var filteredData = StationData.Where(x => x.id.ToString().Contains(query)).ToList();
+                CoordinatesGrid.ItemsSource = new ObservableCollection<Coordinate>(filteredData);
+            }
         }
 
-        // Update pagination
-        private void UpdatePagination()
+        private void UpdatePaginationEnvironmental()
         {
             if (EnvironmentalData != null)
             {
-                var paginatedData = EnvironmentalData.Skip((CurrentPage - 1) * ItemsPerPage).Take(ItemsPerPage).ToList();
+                var paginatedData = EnvironmentalData.Skip((_currentPageEnvironmental - 1) * _itemsPerPage).Take(_itemsPerPage).ToList();
                 EnvironmentalDataGrid.ItemsSource = paginatedData;
 
-                int totalPages = (int)Math.Ceiling((double)EnvironmentalData.Count / ItemsPerPage);
-                PageInfoText.Text = $"Page {CurrentPage} of {totalPages}";
+                int totalPages = (int)Math.Ceiling((double)EnvironmentalData.Count / _itemsPerPage);
+                PageInfoTextEnvironmental.Text = $"Page {_currentPageEnvironmental} of {totalPages}";
             }
         }
 
-
-        // Pagination - Previous Page
-        private void PreviousPageButton_Click(object sender, RoutedEventArgs e)
+        private void UpdatePaginationStation()
         {
-            if (CurrentPage > 1)
+            if (StationData != null)
             {
-                CurrentPage--;
-                UpdatePagination();
+                var paginatedData = StationData.Skip((_currentPageStation - 1) * _itemsPerPage).Take(_itemsPerPage).ToList();
+                CoordinatesGrid.ItemsSource = paginatedData;
+
+                int totalPages = (int)Math.Ceiling((double)StationData.Count / _itemsPerPage);
+                PageInfoTextStation.Text = $"Page {_currentPageStation} of {totalPages}";
             }
         }
 
-        // Pagination - Next Page
-        private void NextPageButton_Click(object sender, RoutedEventArgs e)
+        private void PreviousPageButtonEnvironmental_Click(object sender, RoutedEventArgs e)
         {
-            int totalPages = (int)Math.Ceiling((double)EnvironmentalData.Count / ItemsPerPage);
-            if (CurrentPage < totalPages)
+            if (_currentPageEnvironmental > 1)
             {
-                CurrentPage++;
-                UpdatePagination();
+                _currentPageEnvironmental--;
+                UpdatePaginationEnvironmental();
             }
         }
 
-        // Edit Environmental Data Entry
+        private void NextPageButtonEnvironmental_Click(object sender, RoutedEventArgs e)
+        {
+            int totalPages = (int)Math.Ceiling((double)EnvironmentalData.Count / _itemsPerPage);
+            if (_currentPageEnvironmental < totalPages)
+            {
+                _currentPageEnvironmental++;
+                UpdatePaginationEnvironmental();
+            }
+        }
+
+        private void PreviousPageButtonStation_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentPageStation > 1)
+            {
+                _currentPageStation--;
+                UpdatePaginationStation();
+            }
+        }
+
+        private void NextPageButtonStation_Click(object sender, RoutedEventArgs e)
+        {
+            int totalPages = (int)Math.Ceiling((double)StationData.Count / _itemsPerPage);
+            if (_currentPageStation < totalPages)
+            {
+                _currentPageStation++;
+                UpdatePaginationStation();
+            }
+        }
+
+        private async void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var entry = button?.DataContext as EnvironmentalDataEntry;
+            if (entry != null)
+            {
+                var result = MessageBox.Show($"Are you sure you want to delete entry: {entry.id}?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
+                {
+                    var success = await DeleteEnvironmentalData(entry.id);
+                    if (success)
+                    {
+                        EnvironmentalData.Remove(entry);
+                        UpdatePaginationEnvironmental();
+                        MessageBox.Show($"Deleted entry: {entry.id}");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to delete entry. Please try again.");
+                    }
+                }
+            }
+        }
+
+        private async void DeleteStationButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var coordinate = button?.DataContext as Coordinate;
+            if (coordinate != null)
+            {
+                var result = MessageBox.Show($"Are you sure you want to delete station: {coordinate.id}?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
+                {
+                    var success = await DeleteCoordinate(coordinate.id);
+                    if (success)
+                    {
+                        StationData.Remove(coordinate);
+                        UpdatePaginationStation();
+                        MessageBox.Show($"Deleted station: {coordinate.id}");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to delete station. Please try again.");
+                    }
+                }
+            }
+        }
+
+        private async Task<bool> DeleteEnvironmentalData(Guid id)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"{_apiBaseUrl}api/EnvironmentalData/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error deleting Environmental Data: {ex.Message}");
+                return false;
+            }
+        }
+
+        private async Task<bool> DeleteCoordinate(int id)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"{_apiBaseUrl}api/coordinates/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error deleting Coordinate: {ex.Message}");
+                return false;
+            }
+        }
+
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
             var entry = button?.DataContext as EnvironmentalDataEntry;
             if (entry != null)
             {
-                // Implement edit logic here
-                MessageBox.Show($"Editing entry: {entry.id}");
+                var editDataPopup = new EditDataPopup(environmentalData: entry);
+                bool? result = editDataPopup.ShowDialog();
+
+                if (result == true && editDataPopup.EditedEnvironmentalData != null)
+                {
+                    var index = EnvironmentalData.IndexOf(entry);
+                    EnvironmentalData[index] = editDataPopup.EditedEnvironmentalData;
+                    UpdatePaginationEnvironmental();
+                    MessageBox.Show("Environmental Data updated successfully.");
+                }
             }
         }
 
-        // Delete Environmental Data Entry
-        private void DeleteButton_Click(object sender, RoutedEventArgs e)
-        {
-            var button = sender as Button;
-            var entry = button?.DataContext as EnvironmentalDataEntry;
-            if (entry != null)
-            {
-                EnvironmentalData.Remove(entry);
-                UpdatePagination();
-                MessageBox.Show($"Deleted entry: {entry.id}");
-            }
-        }
-
-        // Edit Station (Coordinate)
         private void EditStationButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
             var coordinate = button?.DataContext as Coordinate;
             if (coordinate != null)
             {
-                // Implement edit logic here
-                MessageBox.Show($"Editing station: {coordinate.id}");
+                var editDataPopup = new EditDataPopup(coordinate: coordinate);
+                bool? result = editDataPopup.ShowDialog();
+
+                if (result == true && editDataPopup.EditedCoordinate != null)
+                {
+                    var index = StationData.IndexOf(coordinate);
+                    StationData[index] = editDataPopup.EditedCoordinate;
+                    UpdatePaginationStation();
+                    MessageBox.Show("Station updated successfully.");
+                }
             }
         }
 
-        // Delete Station (Coordinate)
-        private void DeleteStationButton_Click(object sender, RoutedEventArgs e)
-        {
-            var button = sender as Button;
-            var coordinate = button?.DataContext as Coordinate;
-            if (coordinate != null)
-            {
-                StationData.Remove(coordinate);
-                MessageBox.Show($"Deleted station: {coordinate.id}");
-            }
-        }
-
-        // Search Box Text Changed
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             SearchButton_Click(sender, e);
@@ -237,4 +313,8 @@ namespace Client.View
         }
     }
 
+    public class ApiResponse<T>
+    {
+        public List<T> Data { get; set; }
+    }
 }

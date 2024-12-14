@@ -50,7 +50,7 @@ public class CoordinatesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteDistrict(Guid id)
+    public async Task<IActionResult> DeleteDistrict(int id)
     {
         var success = await _service.DeleteDistrictAsync(id);
         if (!success) return NotFound();

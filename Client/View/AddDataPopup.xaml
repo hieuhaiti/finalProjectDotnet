@@ -2,10 +2,17 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Add New Data"
-        Width="400" Height="400">
+        Width="400" Height="400"
+        WindowStartupLocation="CenterScreen">
+
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
         <!-- TabControl to switch between Coordinate and Environmental Data tabs -->
-        <TabControl x:Name="DataTabControl">
+        <TabControl x:Name="DataTabControl" Grid.Row="0">
             <!-- Tab for Station (Coordinate) -->
             <TabItem Header="Station">
                 <StackPanel Margin="10">
@@ -22,30 +29,48 @@
 
             <!-- Tab for Environmental Data -->
             <TabItem Header="Environmental Data">
-                <StackPanel Margin="10">
-                    <!-- Environmental Data fields -->
-                    <TextBlock Text="CoordinateId" Margin="5,0,0,0" VerticalAlignment="Center" />
-                    <TextBox x:Name="EnvCoordinateIdTextBox" Margin="5" Height="30" />
-                    <TextBlock Text="Temperature" Margin="5,0,0,0" VerticalAlignment="Center" />
-                    <TextBox x:Name="EnvTempTextBox" Margin="5" Height="30" />
-                    <TextBlock Text="Feels Like" Margin="5,0,0,0" VerticalAlignment="Center" />
-                    <TextBox x:Name="EnvFeelsLikeTextBox" Margin="5" Height="30" />
-                    <TextBlock Text="Pressure" Margin="5,0,0,0" VerticalAlignment="Center" />
-                    <TextBox x:Name="EnvPressureTextBox" Margin="5" Height="30" />
-                    <TextBlock Text="Humidity" Margin="5,0,0,0" VerticalAlignment="Center" />
-                    <TextBox x:Name="EnvHumidityTextBox" Margin="5" Height="30" />
-                    <TextBlock Text="AQI" Margin="5,0,0,0" VerticalAlignment="Center" />
-                    <TextBox x:Name="EnvAqiTextBox" Margin="5" Height="30" />
-                    <TextBlock Text="CO" Margin="5,0,0,0" VerticalAlignment="Center" />
-                    <TextBox x:Name="EnvCoTextBox" Margin="5" Height="30" />
-                    <TextBlock Text="PM2.5" Margin="5,0,0,0" VerticalAlignment="Center" />
-                    <TextBox x:Name="EnvPm25TextBox" Margin="5" Height="30" />
-                </StackPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10">
+                        <!-- Environmental Data fields -->
+                        <TextBlock Text="CoordinateId" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvCoordinateIdTextBox" Margin="5" Height="30" />
+                        <TextBlock Text="Temperature" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvTempTextBox" Margin="5" Height="30" />
+                        <TextBlock Text="Feels Like" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvFeelsLikeTextBox" Margin="5" Height="30" />
+                        <TextBlock Text="Pressure" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvPressureTextBox" Margin="5" Height="30" />
+                        <TextBlock Text="Humidity" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvHumidityTextBox" Margin="5" Height="30" />
+                        <TextBlock Text="TempMin" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvTempMinTextBox" Margin="5" Height="30" />
+                        <TextBlock Text="TempMax" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvTempMaxTextBox" Margin="5" Height="30" />
+                        <TextBlock Text="AQI" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvAqiTextBox" Margin="5" Height="30" />
+                        <TextBlock Text="Co" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvCoTextBox" Margin="5" Height="30" />
+                        <TextBlock Text="NO" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvNoTextBox" Margin="5" Height="30" />
+                        <TextBlock Text="NO2" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvNo2TextBox" Margin="5" Height="30" />
+                        <TextBlock Text="O3" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvO3TextBox" Margin="5" Height="30" />
+                        <TextBlock Text="SO2" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvSo2TextBox" Margin="5" Height="30" />
+                        <TextBlock Text="PM2.5" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvPm25TextBox" Margin="5" Height="30" />
+                        <TextBlock Text="PM10" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvPm10TextBox" Margin="5" Height="30" />
+                        <TextBlock Text="NH3" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <TextBox x:Name="EnvNh3TextBox" Margin="5" Height="30" />
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
 
         <!-- Save and Cancel Buttons -->
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10" Grid.Row="1">
             <Button Content="Save" Width="100" Margin="5" Click="SaveButton_Click" />
             <Button Content="Cancel" Width="100" Margin="5" Click="CancelButton_Click" />
         </StackPanel>

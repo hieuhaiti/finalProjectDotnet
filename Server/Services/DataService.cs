@@ -202,14 +202,26 @@ namespace Server.Services
         }
 
         // Delete district
-        public async Task<bool> DeleteDistrictAsync(Guid id)
+        public async Task<bool> DeleteDistrictAsync(int id)
         {
+            // Tìm `District` trong bảng `Coordinates`
             var district = await _dbContext.Coordinates.FindAsync(id);
-            if (district == null) return false;
+            if (district == null)
+                return false;
 
+            // Kiểm tra xem `District` có được tham chiếu bởi `EnvironmentalData` không
+            bool isReferenced = await _dbContext.EnvironmentalDataEntries.AnyAsync(ed => ed.coordinateId == id);
+            if (isReferenced)
+            {
+                // Không thể xóa vì có dữ liệu tham chiếu
+                throw new InvalidOperationException("Cannot delete district because it is referenced by Environmental Data.");
+            }
+
+            // Xóa `District`
             _dbContext.Coordinates.Remove(district);
             await _dbContext.SaveChangesAsync();
             return true;
         }
+
     }
 }
