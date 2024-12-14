@@ -29,14 +29,16 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Search Box -->
-                <TextBlock Text="Search..."
+                <TextBlock
+                    x:Name="SearchBox"
+                     Text="Search..."
                    Foreground="Gray"
                            Background="White"
                    VerticalAlignment="Center"
                    Margin="5,0,0,0"
                    IsHitTestVisible="False"
                    Visibility="{Binding Text, ElementName=SearchBox, Converter={StaticResource StringToVisibilityConverter}}" />
-            
+
                 <!-- Search Button -->
                 <Button Content="Search"
                         Grid.Column="1"

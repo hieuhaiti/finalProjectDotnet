@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using static Client.Model.DataModel;
 
@@ -6,12 +9,17 @@ namespace Client.View
 {
     public partial class EditDataPopup : Window
     {
+        private readonly HttpClient _httpClient;
+        private readonly string _apiBaseUrl;
+
         public Coordinate EditedCoordinate { get; private set; }
         public EnvironmentalDataEntry EditedEnvironmentalData { get; private set; }
 
         public EditDataPopup(Coordinate coordinate = null, EnvironmentalDataEntry environmentalData = null)
         {
             InitializeComponent();
+            _httpClient = new HttpClient();
+            _apiBaseUrl = App.Configuration["api:localhost"];
 
             if (coordinate != null)
             {
@@ -36,7 +44,7 @@ namespace Client.View
             }
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             if (DataTabControl.SelectedIndex == 0) // If "Station" tab is selected
             {
@@ -53,8 +61,16 @@ namespace Client.View
                         description = DescriptionTextBox.Text
                     };
 
-                    DialogResult = true;
-                    Close();
+                    var success = await PutCoordinateData(EditedCoordinate.id, EditedCoordinate);
+                    if (success)
+                    {
+                        DialogResult = true;
+                        Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to save Coordinate. Please try again.");
+                    }
                 }
                 else
                 {
@@ -89,8 +105,16 @@ namespace Client.View
                         so2 = so2
                     };
 
-                    DialogResult = true;
-                    Close();
+                    var success = await PutEnvironmentalData(EditedEnvironmentalData.id, EditedEnvironmentalData);
+                    if (success)
+                    {
+                        DialogResult = true;
+                        Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to save Environmental Data. Please try again.");
+                    }
                 }
                 else
                 {
@@ -103,6 +127,34 @@ namespace Client.View
         {
             DialogResult = false;
             Close();
+        }
+
+        private async Task<bool> PutCoordinateData(int id, Coordinate coordinate)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"{_apiBaseUrl}api/coordinates/{id}", coordinate);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error posting Coordinate: {ex.Message}");
+                return false;
+            }
+        }
+
+        private async Task<bool> PutEnvironmentalData(Guid id, EnvironmentalDataEntry environmentalData)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"{_apiBaseUrl}api/EnvironmentalData/{id}", environmentalData);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error posting Environmental Data: {ex.Message}");
+                return false;
+            }
         }
     }
 }

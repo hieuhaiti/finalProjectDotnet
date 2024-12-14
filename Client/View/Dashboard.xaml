@@ -4,10 +4,177 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:Client.View"
+      xmlns:liveCharts="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Dashboard">
-    <Grid>
-        <TextBlock Text="Dashboard Page" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" />
-    </Grid>
+        <Page.Resources>
+        <Style TargetType="GroupBox">
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontSize="22" FontWeight="Bold" Foreground="Black" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Thông tin Thời Tiết và Ô Nhiễm -->
+            <Grid Margin="10">
+                <Border Background="LightGray" Opacity="0.7">
+                    <Border.Effect>
+                        <BlurEffect Radius="15"/>
+                    </Border.Effect>
+                </Border>
+
+                <GroupBox Header="Thông Tin Thời Tiết và Chỉ Số Ô Nhiễm">
+                    <StackPanel>
+                        <ComboBox Name="DistrictForWeatherSelector" Width="250" Margin="5" VerticalAlignment="Center" FontSize="18" Background="LightBlue" Foreground="Black" SelectionChanged="DistrictForWeatherSelector_SelectionChanged">
+                            <ComboBoxItem Content="Quận Ba Đình" Tag="1"/>
+                            <ComboBoxItem Content="Quận Cầu Giấy" Tag="5"/>
+                            <ComboBoxItem Content="Quận Hoàn Kiếm" Tag="2"/>
+                            <ComboBoxItem Content="Quận Tây Hồ" Tag="3"/>
+                            <ComboBoxItem Content="Quận Thanh Xuân" Tag="9"/>
+                            <ComboBoxItem Content="Quận Hai Bà Trưng" Tag="7"/>
+                            <ComboBoxItem Content="Quận Đống Đa" Tag="6"/>
+                            <ComboBoxItem Content="Quận Long Biên" Tag="4"/>
+                            <ComboBoxItem Content="Quận Hoàng Mai" Tag="8"/>
+                            <ComboBoxItem Content="Quận Bắc Từ Liêm" Tag="12"/>
+                            <ComboBoxItem Content="Quận Nam Từ Liêm" Tag="11"/>
+                            <ComboBoxItem Content="Quận Hà Đông" Tag="10"/>
+                        </ComboBox>
+
+                        <!-- Thời gian -->
+                        <TextBlock Name="CurrentTimeTextBlock"
+                                   Text="Thời gian: Đang cập nhật..."
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="Black"
+                                   HorizontalAlignment="Center"
+                                   Margin="5" />
+
+                        <!-- Bảng hiển thị thông tin -->
+                        <StackPanel Name="TableView" Visibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <TextBlock Name="TableTitle" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Margin="5,5,5,50" />
+                            <Grid Name="TableContent" Margin="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <!-- Không gian cột 1 -->
+                                    <ColumnDefinition Width="*" />
+                                    <!-- Không gian cột 2 -->
+                                    <ColumnDefinition Width="*" />
+                                    <!-- Không gian cột 3 -->
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Nội dung cột -->
+                                <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0">
+                                    <TextBlock Name="LeftColumnContent" TextWrapping="Wrap" Foreground="#333" FontSize="20" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0">
+                                    <TextBlock Name="MiddleColumnContent" TextWrapping="Wrap" Foreground="#333" FontSize="20" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0">
+                                    <TextBlock Name="RightColumnContent" TextWrapping="Wrap" Foreground="#333" FontSize="20" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+            </Grid>
+
+            <!-- Tìm kiếm và So sánh -->
+            <Grid Margin="10" Grid.Row="1">
+                <Border Background="LightGray" Opacity="0.7">
+                    <Border.Effect>
+                        <BlurEffect Radius="15"/>
+                    </Border.Effect>
+                </Border>
+
+                <GroupBox Header="Tìm kiếm và So sánh">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="10">
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Chọn Chỉ Số: " VerticalAlignment="Center" Margin="5"/>
+                                <ComboBox Name="ComparisonType" Width="250" Margin="5" FontSize="18" Background="LightGreen" Foreground="Black" SelectionChanged="ComparisonType_SelectionChanged">
+                                    <ComboBoxItem Content="temp"/>
+                                    <ComboBoxItem Content="feelsLike"/>
+                                    <ComboBoxItem Content="pressure"/>
+                                    <ComboBoxItem Content="humidity"/>
+                                    <ComboBoxItem Content="aqi"/>
+                                    <ComboBoxItem Content="co"/>
+                                    <ComboBoxItem Content="no"/>
+                                    <ComboBoxItem Content="no2"/>
+                                    <ComboBoxItem Content="o3"/>
+                                    <ComboBoxItem Content="so2"/>
+                                    <ComboBoxItem Content="pm2_5"/>
+                                    <ComboBoxItem Content="pm10"/>
+                                    <ComboBoxItem Content="nh3"/>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Chọn Quận: " VerticalAlignment="Center" Margin="5"/>
+                                <ComboBox Name="DistrictForChartSelector" Width="250" Margin="5" FontSize="18" Background="LightGreen" Foreground="Black" SelectionChanged="DistrictForChartSelector_SelectionChanged">
+                                    <ComboBoxItem Content="Quận Ba Đình" Tag="1"/>
+                                    <ComboBoxItem Content="Quận Cầu Giấy" Tag="5"/>
+                                    <ComboBoxItem Content="Quận Hoàn Kiếm" Tag="2"/>
+                                    <ComboBoxItem Content="Quận Tây Hồ" Tag="3"/>
+                                    <ComboBoxItem Content="Quận Thanh Xuân" Tag="9"/>
+                                    <ComboBoxItem Content="Quận Hai Bà Trưng" Tag="7"/>
+                                    <ComboBoxItem Content="Quận Đống Đa" Tag="6"/>
+                                    <ComboBoxItem Content="Quận Long Biên" Tag="4"/>
+                                    <ComboBoxItem Content="Quận Hoàng Mai" Tag="8"/>
+                                    <ComboBoxItem Content="Quận Bắc Từ Liêm" Tag="12"/>
+                                    <ComboBoxItem Content="Quận Nam Từ Liêm" Tag="11"/>
+                                    <ComboBoxItem Content="Quận Hà Đông" Tag="10"/>
+                                </ComboBox>
+                            </StackPanel>
+
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Chọn Năm: " VerticalAlignment="Center" Margin="5"/>
+                                <ComboBox Name="YearSelector" Width="250" Margin="5" FontSize="18" Background="LightGreen" Foreground="Black"  SelectionChanged="YearSelector_SelectionChanged">
+                                    <ComboBoxItem Content="2015" Tag="2015"/>
+                                    <ComboBoxItem Content="2016" Tag="2016"/>
+                                    <ComboBoxItem Content="2017" Tag="2017"/>
+                                    <ComboBoxItem Content="2018" Tag="2018"/>
+                                    <ComboBoxItem Content="2019" Tag="2019"/>
+                                    <ComboBoxItem Content="2020" Tag="2020"/>
+                                    <ComboBoxItem Content="2021" Tag="2021"/>
+                                    <ComboBoxItem Content="2022" Tag="2022"/>
+                                    <ComboBoxItem Content="2023" Tag="2023"/>
+                                    <ComboBoxItem Content="2024" Tag="2024"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Biểu đồ -->
+                        <GroupBox Header="Biểu Đồ Thống Kê 12 Tháng" Margin="10">
+                            <StackPanel>
+                                <TextBlock Name="ChartTitle" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="10" />
+                                <liveCharts:CartesianChart Name="MonthlyChart" Height="350" Margin="10">
+                                    <liveCharts:CartesianChart.Series>
+                                        <liveCharts:ColumnSeries Title="Dữ liệu" Values="{Binding MonthlyValues}" />
+                                    </liveCharts:CartesianChart.Series>
+                                    <liveCharts:CartesianChart.AxisX>
+                                        <liveCharts:Axis Labels="{Binding MonthLabels}" />
+                                    </liveCharts:CartesianChart.AxisX>
+                                    <liveCharts:CartesianChart.AxisY>
+                                        <liveCharts:Axis />
+                                    </liveCharts:CartesianChart.AxisY>
+                                </liveCharts:CartesianChart>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </GroupBox>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
 </Page>
