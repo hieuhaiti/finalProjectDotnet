@@ -1,78 +1,84 @@
-﻿<Window x:Class="Client.View.AddDataPopup"
+﻿<Window x:Class="WPFMapApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Add New Data"
-        Width="400" Height="400"
-        WindowStartupLocation="CenterScreen">
-
+        xmlns:g="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation"
+        Title="District Map" Height="700" Width="800">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+        <!-- Bản đồ -->
+        <g:GMapControl Name="MapControl" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
-        <!-- TabControl to switch between Coordinate and Environmental Data tabs -->
-        <TabControl x:Name="DataTabControl" Grid.Row="0">
-            <!-- Tab for Station (Coordinate) -->
-            <TabItem Header="Station">
-                <StackPanel Margin="10">
-                    <TextBlock Text="Longitude" Margin="5,0,0,0" VerticalAlignment="Center" />
-                    <TextBox x:Name="LongitudeTextBox" Margin="5" Height="30" />
-                    <TextBlock Text="Latitude" Margin="5,0,0,0" VerticalAlignment="Center" />
-                    <TextBox x:Name="LatitudeTextBox" Margin="5" Height="30" />
-                    <TextBlock Text="District" Margin="5,0,0,0" VerticalAlignment="Center" />
-                    <TextBox x:Name="DistrictTextBox" Margin="5" Height="30" />
-                    <TextBlock Text="Description" Margin="5,0,0,0" VerticalAlignment="Center" />
-                    <TextBox x:Name="DescriptionTextBox" Margin="5" Height="30" />
-                </StackPanel>
-            </TabItem>
+        <!-- Khung hiển thị thông tin -->
+        <Border Name="InfoBorder" BorderBrush="Gray" BorderThickness="2"
+                Background="#F8F9FA" Padding="20" CornerRadius="8"
+                VerticalAlignment="Center" HorizontalAlignment="Center"
+                Visibility="Collapsed" Width="450" Height="400">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <!-- Tiêu đề -->
+                <Border Background="#3498DB" CornerRadius="5" Padding="8" Margin="0,0,0,15">
+                    <TextBlock Name="InfoTitle" FontSize="20" FontWeight="Bold" Foreground="White"
+                               TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" />
+                </Border>
 
-            <!-- Tab for Environmental Data -->
-            <TabItem Header="Environmental Data">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="10">
-                        <!-- Environmental Data fields -->
-                        <TextBlock Text="CoordinateId" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvCoordinateIdTextBox" Margin="5" Height="30" />
-                        <TextBlock Text="Temperature" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvTempTextBox" Margin="5" Height="30" />
-                        <TextBlock Text="Feels Like" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvFeelsLikeTextBox" Margin="5" Height="30" />
-                        <TextBlock Text="Pressure" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvPressureTextBox" Margin="5" Height="30" />
-                        <TextBlock Text="Humidity" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvHumidityTextBox" Margin="5" Height="30" />
-                        <TextBlock Text="TempMin" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvTempMinTextBox" Margin="5" Height="30" />
-                        <TextBlock Text="TempMax" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvTempMaxTextBox" Margin="5" Height="30" />
-                        <TextBlock Text="AQI" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvAqiTextBox" Margin="5" Height="30" />
-                        <TextBlock Text="Co" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvCoTextBox" Margin="5" Height="30" />
-                        <TextBlock Text="NO" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvNoTextBox" Margin="5" Height="30" />
-                        <TextBlock Text="NO2" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvNo2TextBox" Margin="5" Height="30" />
-                        <TextBlock Text="O3" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvO3TextBox" Margin="5" Height="30" />
-                        <TextBlock Text="SO2" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvSo2TextBox" Margin="5" Height="30" />
-                        <TextBlock Text="PM2.5" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvPm25TextBox" Margin="5" Height="30" />
-                        <TextBlock Text="PM10" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvPm10TextBox" Margin="5" Height="30" />
-                        <TextBlock Text="NH3" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <TextBox x:Name="EnvNh3TextBox" Margin="5" Height="30" />
+                <!-- Grid hiển thị thông tin 2 cột -->
+                <Grid HorizontalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Cột 1 -->
+                    <StackPanel Grid.Column="0" Margin="0,0,15,0" HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Margin="0,10" HorizontalAlignment="Center">
+                            <Image Source="pack://application:,,,/Assets/temperature.png" Width="24" Height="24" Margin="0,0,8,0" />
+                            <TextBlock Name="InfoTemperature" FontSize="16" Foreground="#E74C3C" TextWrapping="Wrap" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,10" HorizontalAlignment="Center">
+                            <Image Source="pack://application:,,,/Assets/aqi.png" Width="24" Height="24" Margin="0,0,8,0" />
+                            <TextBlock Name="InfoAQI" FontSize="16" Foreground="#3498DB" TextWrapping="Wrap" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,10" HorizontalAlignment="Center">
+                            <Image Source="pack://application:,,,/Assets/pressure.png" Width="24" Height="24" Margin="0,0,8,0" />
+                            <TextBlock Name="InfoPressure" FontSize="16" Foreground="#8E44AD" TextWrapping="Wrap" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,10" HorizontalAlignment="Center">
+                            <Image Source="pack://application:,,,/Assets/humidity.png" Width="24" Height="24" Margin="0,0,8,0" />
+                            <TextBlock Name="InfoHumidity" FontSize="16" Foreground="#1ABC9C" TextWrapping="Wrap" VerticalAlignment="Center" />
+                        </StackPanel>
                     </StackPanel>
-                </ScrollViewer>
-            </TabItem>
-        </TabControl>
 
-        <!-- Save and Cancel Buttons -->
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10" Grid.Row="1">
-            <Button Content="Save" Width="100" Margin="5" Click="SaveButton_Click" />
-            <Button Content="Cancel" Width="100" Margin="5" Click="CancelButton_Click" />
-        </StackPanel>
+                    <!-- Cột 2 -->
+                    <StackPanel Grid.Column="1" Margin="15,0,0,0" HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Margin="0,10" HorizontalAlignment="Center">
+                            <Image Source="pack://application:,,,/Assets/no2.png" Width="24" Height="24" Margin="0,0,8,0" />
+                            <TextBlock Name="InfoNO2" FontSize="16" Foreground="#16A085" TextWrapping="Wrap" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,10" HorizontalAlignment="Center">
+                            <Image Source="pack://application:,,,/Assets/co2.png" Width="24" Height="24" Margin="0,0,8,0" />
+                            <TextBlock Name="InfoCO" FontSize="16" Foreground="#C0392B" TextWrapping="Wrap" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,10" HorizontalAlignment="Center">
+                            <Image Source="pack://application:,,,/Assets/so2.png" Width="24" Height="24" Margin="0,0,8,0" />
+                            <TextBlock Name="InfoSO2" FontSize="16" Foreground="#F39C12" TextWrapping="Wrap" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,10" HorizontalAlignment="Center">
+                            <Image Source="pack://application:,,,/Assets/pm-25.png" Width="24" Height="24" Margin="0,0,8,0" />
+                            <TextBlock Name="InfoPM25" FontSize="16" Foreground="#2980B9" TextWrapping="Wrap" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Nút đóng -->
+                <Button Content="Close" Click="CloseButton_Click" Margin="0,20,0,0"
+                        HorizontalAlignment="Center" Width="100" Height="35"
+                        Background="#34495E" Foreground="White" BorderThickness="0"
+                        FontWeight="Bold" Cursor="Hand" />
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>
